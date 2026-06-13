@@ -2,6 +2,10 @@
 
 A project is a folder of context plus a skill that loads it. You explain your setup once, then call `/raycast` (or `/dotfiles`, or whatever you name it) and the agent already knows it.
 
+![The raycast project skill explaining its own behavior: load memory, verify against reality, act, write back](assets/raycast-skill-demo.png)
+
+*The `raycast` project skill, running in my own setup: load the memory, check reality, act, write back. I number my project skills `/p5-`; the template installs them as plain `/raycast`.*
+
 I kept re-explaining the same things to Claude. Where my Raycast scripts live, the metadata format, which ones I'd already built. Every session, from zero. So I gave it a project. Now I say "make me a Raycast script for X" and it knows where the scripts go, writes one, tests it, done. That one project saves me more typing than any prompt trick.
 
 Claude Desktop has Projects: a folder of files the chat can see. This is that idea for Claude Code, and it's better. The context loads only when you call the skill, so it costs nothing the rest of the time. The agent writes back what it learns, so the project gets sharper on its own. And it runs in your terminal with full tools, not a chat box.
