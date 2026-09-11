@@ -1,8 +1,8 @@
-# Output modes
+# Script modes
 
-`@raycast.mode` takes one of four values:
+The `@raycast.mode` field takes one of four mode names:
 
-- `fullOutput` opens a result window with all stdout.
-- `compact` shows the last line of output in a toast.
-- `inline` shows the first line of output in the command's list item, auto-refreshes via `refreshTime`.
-- `silent` shows the last line in a HUD after the Raycast window closes.
+- `fullOutput`: result window
+- `compact`: last line in toast
+- `inline`: first line in item, auto-refresh via `refreshTime`
+- `silent`: last line in HUD after window closes

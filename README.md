@@ -1,10 +1,10 @@
 # claude-simple-projects
 
-A project is a folder of context plus a skill that loads it. You explain your setup once, then call `/raycast` (or `/dotfiles`, or whatever you name it) and the agent already knows it.
+A project is a folder of context plus a skill that loads it. You explain your setup once, then call `/p-raycast` (or `/p-dotfiles`, or whatever you name it) and the agent already knows it.
 
-![The raycast project skill explaining its own behavior: load memory, verify against reality, act, write back](assets/raycast-skill-demo.png)
+![/p-raycast explaining itself: it loads the Raycast workspace, writes and tests scripts, and saves new facts to claude-memory/ and CHANGELOG.md in the same turn](assets/raycast-skill-demo.png)
 
-*The `raycast` project skill, running in my own setup: load the memory, check reality, act, write back. I number my project skills `/p5-`; the template installs them as plain `/raycast`.*
+*The `/p-raycast` project skill, running in my own setup.*
 
 I kept re-explaining the same things to Claude. Where my Raycast scripts live, the metadata format, which ones I'd already built. Every session, from zero. So I gave it a project. Now I say "make me a Raycast script for X" and it knows where the scripts go, writes one, tests it, done. That one project saves me more typing than any prompt trick.
 
@@ -12,17 +12,24 @@ Claude Desktop has Projects: a folder of files the chat can see. This is that id
 
 ## How it works
 
-A project is a folder at `~/claude-projects/<name>/` and a `/<name>` skill that loads it. Inside the folder:
+A project is a folder at `~/claude-projects/<name>/` and a `/p-<name>` skill that loads it. Inside the folder:
 
 | File | What it holds |
 |---|---|
-| `CLAUDE.md` | The brain. A `## Memories` index, the facts you reach for most, and a map of where things live. Read first, every time. |
-| `claude-memory/` | One durable fact per file: a path, a config value, a rule, a decision. |
-| `notes/` | Working narrative: plans, gotcha lists, drafts, checklists. |
-| `sessions.md` | A thin log, one line per session, so you can trace history without bloating the project. |
-| `README.md` | A one-line description for a human. |
+| `CLAUDE.md` | The brain. Rules for working here, a `## Memories` index, the facts needed nearly every session, and a map of where things live. Read first, every time. |
+| `claude-memory/` | One durable fact per file: a path, a config value, a rule, a gotcha. Current state only. |
+| `resources/` | Anything else worth keeping: scripts, docs, exports, PDFs. Free-form. |
+| `CHANGELOG.md` | One dated line per change, newest first. The history that memory doesn't keep. |
 
-You call `/raycast`. The skill reads the brain, scans the short index, opens only the memory files the task needs. You work. The moment a durable fact shows up, the skill writes it to a file and adds its index bullet in the same turn. Next session starts smarter than this one.
+The skill itself only says "read `CLAUDE.md` and follow it". All the rules live in the folder, so the skill and the project never drift apart.
+
+You call `/p-raycast`. The agent reads `CLAUDE.md`, scans the index, and opens only the memory files the task needs. You work. The rules under `How to work here` do the rest:
+
+- **Write the moment a fact lands.** A new fact gets its memory file in the same turn, not at the end of the session when the agent has already forgotten it.
+- **Your word wins.** Contradict a file and the file gets rewritten that turn.
+- **Memory holds now, the changelog holds what moved.** So "what did we change five weeks ago" has a dated line to find.
+- **The files are a cache, not the truth.** On a miss, the agent searches your past Claude Code chats with `/past-conversations` before it says it doesn't know.
+- **Leave every file you touch true.** A stale line gets fixed the turn the agent spots it. That's the whole cleanup process.
 
 ## Quickstart
 
@@ -32,31 +39,26 @@ cd claude-simple-projects
 claude "Read SETUP.md and follow it"
 ```
 
-Claude installs the `/project-manager` skill, then offers to build your first project. It asks the name, what it is, and where the starting context comes from: a blank start, a notes folder you already have, or the conversation you're in right now. A few questions later you have a working project and a `/<name>` skill to call it.
+Claude installs `/project-create` and `/past-conversations`, then offers to build your first project. It asks the name, what the project is for, the facts you already know, and the rules it must never break. A few questions later you have a folder and a `/p-<name>` skill to call it.
 
-## Three modes
-
-`/project-manager` does three things:
-
-- **create** - interview, then scaffold a fresh project and its skill.
-- **adopt** - point it at a messy notes folder, or the current conversation, and it reshapes what's there into a project.
-- **update-all** - a cleanup pass over every project: dedupe the facts, prune the stale, rewrite each index clean.
+Got a notes folder already? Move it to `~/claude-projects/<name>/` and run `/project-create`. It folds your notes in and never overwrites them.
 
 ## What a project looks like
 
-`examples/raycast/` is a complete project, generated by the create flow, not hand-written. Open it to see the shape: the `CLAUDE.md` brain, seven one-fact memory files, a `notes/` doc, and a thin session log. Copy it as a starting point for your own.
+`examples/raycast/` is my real Raycast project with the private parts taken out. Eleven one-fact memory files, a changelog, doc links in `resources/`, and four working script commands. One quirk worth copying: `scripts/` sits at the top level instead of `resources/`, because Raycast has that exact path registered and moving it would unregister every script.
 
 ## Pairs with claude-simple-memory
 
-A project uses the same file-per-fact memory as [claude-simple-memory](https://github.com/Pawel-Kica/claude-simple-memory): same frontmatter, same four types, same index rule. A project is that memory system scoped to one folder, plus working notes and a session log. Install claude-simple-memory too if you also want global and per-repo memory. You don't need it first; this stands on its own.
+A project uses the same one-fact-per-file memory as [claude-simple-memory](https://github.com/Pawel-Kica/claude-simple-memory), scoped to one folder, plus `resources/` and a changelog. Install claude-simple-memory too if you also want global and per-repo memory. You don't need it first, this stands on its own.
 
 ## What's in the repo
 
 | Path | What |
 |---|---|
 | `SETUP.md` | The setup prompt. Claude reads it and installs everything |
-| `skill/SKILL.md` | The `/project-manager` skill: create, adopt, update-all |
-| `examples/raycast/` | A full project, generated by the tool, to copy the shape from |
+| `skills/project-create/` | Creates a project folder and its `/p-<name>` skill |
+| `skills/past-conversations/` | Searches and resumes past Claude Code chats, the fallback when memory has nothing |
+| `examples/raycast/` | A real project to copy the shape from |
 
 ## License
 

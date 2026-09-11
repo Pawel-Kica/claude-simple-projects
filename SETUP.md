@@ -4,26 +4,24 @@
 
 You are Claude, installing claude-simple-projects. Follow the steps in order. Ask one question at a time and wait for the answer.
 
-## 1. Install the skill
+## 1. Install the skills
 
-1. Create `~/claude-projects/` if it does not exist. This is the home for every project.
-2. Copy `skill/SKILL.md` from this repo to `~/.claude/skills/project-manager/SKILL.md`, creating folders as needed. This gives the user `/project-manager` with its three modes: create, adopt, update-all.
+1. Create `~/claude-projects/` if it does not exist. Every project lives here.
+2. Copy `skills/project-create/` to `~/.claude/skills/project-create/`.
+3. Copy `skills/past-conversations/` to `~/.claude/skills/past-conversations/`. Projects call it when their memory has nothing on a topic.
 
-Confirm the skill is installed and tell the user it is triggered by `/project-manager` or phrases like "create a project".
+If either skill folder already exists, ask before overwriting it.
+
+Confirm both are installed: `/project-create` (or "create a project") makes a project, `/past-conversations` searches past Claude Code chats.
 
 ## 2. Offer to create the first project
 
 Ask: "Want to create your first project now, or stop here?"
 
-If they stop, you are done. If they want one, run the **create** flow from the skill (sections 2 to 5 of `skill/SKILL.md`):
-
-1. Ask the name (kebab-case), what it is in one line, and where the starting context comes from: a blank start, an existing notes folder, or this conversation.
-2. Interview for the initial durable facts and any hard rules the project must respect. One question at a time.
-3. Scaffold `~/claude-projects/<name>/`: `CLAUDE.md` with a `# Memories` index, `claude-memory/` with one file per fact, an empty `notes/`, a thin `sessions.md`, and a one-line `README.md`.
-4. Generate the project's own skill at `~/.claude/skills/<name>/SKILL.md` from the spine in section 4 of the skill.
+If they stop, you are done. If they want one, follow `skills/project-create/SKILL.md` from Interview to Finish.
 
 ## 3. Hand off
 
-1. Show the user what was created: the folder path, the files, and the new `/<name>` trigger.
-2. Tell them how it runs from here: call `/<name>` (or its trigger phrases) to load the project and work with full context. The skill writes new durable facts back to `claude-memory/` and the index automatically, keeps working narrative in `notes/`, and logs each session as one thin line in `sessions.md`.
-3. Point them at `examples/raycast/` in this repo for a complete project to copy the shape from, and at `/project-manager adopt` to wrap a folder they already have.
+1. Show what was created: the folder path, the files, and the new `/p-<name>` trigger.
+2. Tell them how it runs from here: call `/p-<name>` to load the project. The rules under `How to work here` in its `CLAUDE.md` make the agent write new facts to `claude-memory/` the same turn, log every change in `CHANGELOG.md`, and search past chats before saying it doesn't know.
+3. Point them at `examples/raycast/` for a real project to copy the shape from. Already have a notes folder? Move it to `~/claude-projects/<name>/` and run `/project-create`, it folds the notes in.

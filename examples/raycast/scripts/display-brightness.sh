@@ -3,27 +3,28 @@
 # @raycast.schemaVersion 1
 # @raycast.title Display Brightness
 # @raycast.mode silent
-# @raycast.icon 💡
-# @raycast.packageName Display Tools
-# @raycast.argument1 { "type": "text", "placeholder": "level 1-10" }
+# @raycast.packageName Displays
+# @raycast.icon 🔆
+# @raycast.argument1 { "type": "text", "placeholder": "1-10 (x10%)" }
+# @raycast.description Set external display brightness via BetterDisplay. 1 = 10%, 10 = 100%.
 
-# @raycast.author Example Developer
-# @raycast.authorURL https://example.com
-# @raycast.description Set external display brightness, 1 to 10 maps to 10% to 100%.
+# Raycast runs scripts with a bare PATH, betterdisplaycli lives in Homebrew's bin.
+export PATH="/opt/homebrew/bin:$PATH"
 
-level="$1"
+# Replace with a substring of your display's name, as BetterDisplay shows it.
 display="<DisplayName>"
+n="$1"
 
-if ! [[ "$level" =~ ^([1-9]|10)$ ]]; then
-  echo "Level must be a whole number from 1 to 10."
+if ! [[ "$n" =~ ^([1-9]|10)$ ]]; then
+  echo "Use 1-10 (got: $n)"
   exit 1
 fi
 
-if ! command -v betterdisplaycli >/dev/null 2>&1; then
-  echo "betterdisplaycli not found. Install it via Homebrew and start the app."
+if ! pgrep -xq BetterDisplay; then
+  echo "BetterDisplay is not running"
   exit 1
 fi
 
-percent=$((level * 10))
-betterdisplaycli set -nameLike="$display" -brightness="${percent}%"
-echo "Brightness set to ${percent}%."
+pct=$((n * 10))
+betterdisplaycli set -nameLike="$display" -brightness="${pct}%"
+echo "Displays set to ${pct}%"
